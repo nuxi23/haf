@@ -1,0 +1,18 @@
+{{} .} cr ` ~ I'm using this enough it should probably be a built-in~
+{{login: } prin1 input ups GUEST eq {password: } prin1 input ups SWORDFISH eq and} login-prompt `
+{login-prompt not {bye} {{\log /write IN} exec cr cr {Welcome to nuxiland} . time . cr cr input-loop} ifte} login `
+{dup cmd-list swap 1 1 re {eval} {do-nothing} ifte} parse-command ` ~chokes on special regex characters like + but good enough for a demo~
+{{exit help ls touch type w who}} cmd-list `
+{{Commands implemented: } prin1 cmd-list .} {help} `
+{bye} exit `
+{nuxi user cat .} who `
+{who} w `
+{{ti99 geneve cortex}} {directory} `
+{>r directory r> cons quote {directory} bind} {touch} `
+{car eval .} type `
+{{The first 16-bit microcomputer}} {ti99} `
+{{A 99/4a compatible computer, based on the 9995 chip.}} {geneve} `
+{{A 9900-based computer developed by a rogue group within TI}} {cortex} `
+{1 {clearstack {nuxi>} prin1 input candr parse-command 1} while} input-loop `
+{directory .} {ls} `
+login

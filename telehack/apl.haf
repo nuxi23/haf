@@ -1,0 +1,14 @@
+~a collection of APL-insired words for Haf~
+
+{REDUCE-FUNC}
+{>r eval r> depth 2 - {>r >r r@ eval r> r> 1 -} while drop} swap bind
+{REDUCE}
+{depth 2 - {>r >r litstack >r clearstack 3 nr> 2 pick 3 n>r drop reduce-func r> swap >r eval drop r>} {reduce-func} ifte} swap bind
+{MAP-FUNC}
+{>r eval r@ eval r> depth 2 - {>r >r swap r@ eval swap cons r> r> 1 -} while drop} swap bind
+{MAP}
+{depth 2 - {>r >r litstack >r clearstack 3 nr> 2 pick 3 n>r drop map-func swap >r eval drop r>} {map-func} ifte} swap bind
+{IOTA}
+{dup {} swap {>r r@ 2 pick swap - cons r> 1 -} while swap drop} swap bind
+{REVERSE}
+{false >r {} setfalse {} swap {swap >r candr r> cons swap} while dup len 1 - left r> setfalse} swap bind

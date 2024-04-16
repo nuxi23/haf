@@ -1,0 +1,30 @@
+~relay shell, a sample haf application~
+~by nuxi~
+
+{{relay>} prin1 input quote {current-line} `} get-line ` ~input loop~
+{} defdict ` ~start with an empty list~
+{0 defdict eval {current-line swap dup eval gi sed quote {current-line} `} while} parse-list `
+{{relay /bg} exec drop} initialize ` ~enter relay~
+{{relay /quit} exec drop} exit `  ~quit relay~
+{relay over cons .exe} post-relay `
+{1 {get-line current-line // ne {parse-list current-line post-relay} {false} ifte} while drop} shell ` ~main shell~
+{swap over ` quote defdict cons quote {defdict} `} alias ` ~add alias to defdict~
+
+{initialize shell exit} relay-shell ` ~main loop~
+
+
+~startup routine~
+cls exec .
+{{} .} cr `
+{relay shell, a sample haf application} .
+{by nuxi} .
+cr cr
+{to create aliases, quit the shell via //} .
+{and then make a new alias with:} .
+{name abr alias} .
+{ex: nuxi /n alias} .
+{then restart the shell with relay-shell} .
+cr
+
+
+relay-shell
