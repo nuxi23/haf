@@ -5,7 +5,8 @@ import subprocess
 
 envstack = deque()
 returnstack = deque()
-primitives = {'+','-','*','//','/','gt','lt','eq','.','describe','stack','litstack','words','sed','userdict','len','mid','depth','quote','&','eval','bind','dup','drop','swap','over','rot','>r','r@','r>','clearstack','candr','exec','inline','ifte','while','bye','fwd','left','right','color','up','down','pos','cs'}
+primitives = {'+','-','*','mod','/','gt','lt','eq','.','describe','stack','litstack','words','sed','userdict','len','mid','depth','quote','&','eval','bind','unbind','dup','drop','swap','over','rot','>r','r@','r>','clearstack','candr','exec','inline','ifte','while','bye'}
+primitives.update({'fwd','left','right','color','up','down','pos','cs','setpos','teleport','home','penup','pendown','showturtle','hideturtle','bgcolor','circle'}) #turtle graphics
 #put the primitivies in some kind of logical groupings / order
 quotes = {'{'} # add more later? maybe rethink commenting
 dictionary = {}
@@ -42,39 +43,33 @@ def evaluate(readline):
                 token, separator, readline = readline.partition(' ')    
                 parse(token)
 
-def parse(token):
-    if token.lower() in primitives:
-        evaluateprimitive(token.lower())
-    elif token.lower() in dictionary:
+def parse(token): 
+    if token.lower() in dictionary: #I expressly let you re-bind over top of primitives
            evaluate(dictionary[token.lower()])
+    elif token.lower() in primitives:
+           evaluateprimitive(token.lower())
     else: envstack.append(token)
 
-def evaluateprimitive(token): # order these
+def evaluateprimitive(token): # order these more logicially
+                              #error handling would be, you know, nice to have
         if token == "+":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                arg3 = arg2 + arg1
-                envstack.append(str(arg3))
+                envstack.append(str(arg2 + arg1))
         elif token == "-":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                arg3 = arg2 - arg1
-                envstack.append(str(arg3))
+                envstack.append(str(arg2 - arg1))
         elif token == "*":
+                envstack.append(str(arg2 * arg1))
+        elif token == "mod":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                arg3 = arg2 * arg1
-                envstack.append(str(arg3))
-        elif token == "//":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                arg3 = arg2 // arg1
-                envstack.append(str(arg3))
+                envstack.append(str(arg2 // arg1))
         elif token == "/":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                arg3 = arg2 / arg1
-                envstack.append(str(arg3))
+                envstack.append(str(arg2 / arg1))
         elif token == "gt":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
@@ -99,8 +94,8 @@ def evaluateprimitive(token): # order these
         elif token == ".":
               print(envstack.pop())
         elif token == "&":
-               arg1 = envstack.pop
-               arg2 = envstack.pop
+               arg1 = envstack.pop()
+               arg2 = envstack.pop()
                envstack.append(arg2 + arg1)
         elif token == "eval":
               evaluate(envstack.pop())
@@ -108,6 +103,11 @@ def evaluateprimitive(token): # order these
               arg1 = envstack.pop()
               arg2 = envstack.pop()
               dictionary[arg2] = arg1
+        elif token == "unbind":
+               arg1 = envstack.pop()
+               try:
+                      del dictionary[arg1]
+               except: pass
         elif token == "dup":
               arg1 = envstack.pop()
               envstack.append(arg1)
@@ -126,20 +126,19 @@ def evaluateprimitive(token): # order these
               envstack.append(o.decode('ascii'))
         elif token == "inline":
               arg1 = envstack.pop()
-              arg2 = eval(arg1)
-              envstack.append(arg2)
+              envstack.append(eval(arg2))
         elif token == "ifte":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
                arg3 = envstack.pop()
-               if arg3 != '0':
+               if arg3 != '0': #replace with definable false
                       evaluate(arg2)
                else:
                       evaluate(arg1)
         elif token == "while":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
-              while arg2 !='0':
+              while arg2 !='0': #replace with definable false
                      envstack.append(arg2)
                      returnstack.append(arg1)
                      evaluate(arg1)
@@ -241,7 +240,33 @@ def evaluateprimitive(token): # order these
                 arg1 = envstack.pop()
                 t.color(arg1)
         elif token == "pos":
-                envstack.append(t.pos())                                                                                
+                envstack.append(t.pos())
+        elif token == "setpos":
+               arg1 = int(envstack.pop())
+               arg2 = int(envstack.pop())
+               t.setpos(arg2,arg1)
+        elif token == "teleport":
+               arg1 = int(envstack.pop())
+               arg2 = int(envstack.pop())
+               t.teleport(arg2,arg1)
+        elif token == "home":
+               t.home()
+        elif token =="penup":
+               t.penup()
+        elif token =="pendown":
+               t.pendown()
+        elif token =="showturtle":
+               t.showturtle()
+        elif token =="hideturtle":
+               t.hideturtle
+        elif token =="circle":
+               arg1 = int(envstack.pop())
+               t.circle(arg1)
+        elif token =="bgcolor":
+               arg1=envstack.pop()
+               t.bgcolor(arg1)
+
+                                                                         
         else:
                print("oops")
 
