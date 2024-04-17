@@ -9,8 +9,9 @@ The Python version was born when my 11 year old took an interest in the Telehack
 
 Additionally, as far as I know, there has not yet been the concatenative language equivalent of [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Due to dropping colon definitions (among other things), Haf has an incredibly simple parser, providing a good jumping in point for people curious about how they work. The code as such is deliberately pretty wordy (maybe too wordy?).
 
-**n.b.** Until I get a chance to work on a Python version, the TeleBASIC manual should mostly work, with one major difference:
-**I have swapped the way Bind works**, so:
+**n.b.** Until I get a chance to work on a Python version, the TeleBASIC manual should mostly work, although not all commands are implmented, and none of the alternate bracket types '(', '[' or even '~' are implmented. There is, however, one major difference:
+
+**I have swapped the way Bind works**. Code tends to be more readable when you put the name of the function first, so:
 >{dup *} double bind
 
 is now
@@ -24,6 +25,7 @@ Until I implement either builtins or a standard library, I would highly suggest 
 - well, some error handling would be nice. Probably work on that first. 
 - and a manual, also, too.
 - implement more of the primitives from TeleHaf
+- comments, though I may change the syntax for them
 - add either builtins or a standard library
 - remove unneccesary primitives (they were primitives in TeleHaf due to performance issues)
 - file handling of some sort (was never thrilled with the TeleHaf version)
