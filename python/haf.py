@@ -5,7 +5,9 @@ import subprocess
 
 envstack = deque()
 returnstack = deque()
-primitives = {'+','-','*','mod','/','gt','lt','eq','.','describe','stack','litstack','words','sed','userdict','len','mid','depth','quote','&','eval','bind','unbind','dup','drop','swap','over','rot','>r','r@','r>','clearstack','candr','exec','inline','ifte','while','bye'}
+primitives = {'+','-','*','mod','/'} #math
+primitives.update({'gt','lt','eq'}) #comparison
+primitives.update({'.','describe','stack','litstack','words','sed','userdict','len','mid','depth','quote','&','eval','bind','unbind','dup','drop','swap','over','rot','>r','r@','r>','clearstack','candr','exec','inline','ifte','while','bye'}) #unsorted :)
 primitives.update({'fwd','left','right','color','up','down','pos','cs','setpos','teleport','home','penup','pendown','showturtle','hideturtle','bgcolor','circle'}) #turtle graphics
 #put the primitivies in some kind of logical groupings / order
 quotes = {'{'} # add more later? maybe rethink commenting
@@ -51,25 +53,42 @@ def parse(token):
     else: envstack.append(token)
 
 def evaluateprimitive(token): # order these more logicially
-                              #error handling would be, you know, nice to have
+    try:                          #error handling would be, you know, nice to have
         if token == "+":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                envstack.append(str(arg2 + arg1))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) + int(arg1)))
+                except:
+                       envstack.append('0') #replace with flexible false?
         elif token == "-":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                envstack.append(str(arg2 - arg1))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) - int(arg1)))
+                except:
+                       envstack.append('0')
         elif token == "*":
-                envstack.append(str(arg2 * arg1))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) * int(arg1)))
+                except:
+                       envstack.append('0')
         elif token == "mod":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                envstack.append(str(arg2 // arg1))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) // int(arg1)))
+                except:
+                       envstack.append('0')
         elif token == "/":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                envstack.append(str(arg2 / arg1))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) / int(arg1)))
+                except:
+                       envstack.append('0')
         elif token == "gt":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
@@ -87,10 +106,12 @@ def evaluateprimitive(token): # order these more logicially
                        arg3 = 0
                 envstack.append(str(arg3))
         elif token == "eq":
-                arg1 = int(envstack.pop())
-                arg2 = int(envstack.pop())
-                arg3 = arg2 == arg1
-                envstack.append(str(arg3))
+                arg1 = envstack.pop()
+                arg2 = envstack.pop()
+                try:
+                     envstack.append(str(int(arg2) == int(arg1)))
+                except:
+                       envstack.append('0')
         elif token == ".":
               print(envstack.pop())
         elif token == "&":
@@ -126,7 +147,7 @@ def evaluateprimitive(token): # order these more logicially
               envstack.append(o.decode('ascii'))
         elif token == "inline":
               arg1 = envstack.pop()
-              envstack.append(eval(arg2))
+              envstack.append(eval(arg1))
         elif token == "ifte":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -189,10 +210,14 @@ def evaluateprimitive(token): # order these more logicially
                arg1 = len(envstack)
                envstack.append(str(arg1))
         elif token =="mid":
-               arg1 = int(envstack.pop())
-               arg2 = int(envstack.pop())
+               arg1 = envstack.pop()
+               arg2 = envstack.pop()
                arg3 = envstack.pop()
-               envstack.append(arg3[arg2:arg2 + arg1])
+               try:
+                     envstack.append(arg3[int(arg2):int(arg2) + int(arg1)])
+               except:
+                     envstack.append('')
+               
         elif token =="len":
                arg1 = envstack.pop()
                envstack.append(str(len(arg1)))  
@@ -269,7 +294,8 @@ def evaluateprimitive(token): # order these more logicially
                                                                          
         else:
                print("oops")
-
+    except IndexError:
+        print("Stack Underflow")
 
 if __name__ == "__main__":
 
