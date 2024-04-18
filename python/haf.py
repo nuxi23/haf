@@ -5,13 +5,28 @@ import subprocess
 
 envstack = deque()
 returnstack = deque()
+
+quotes = {'{'} # add more later? maybe rethink commenting
+
+#put the primitivies in some kind of logical groupings / order
 primitives = {'+','-','*','mod','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
 primitives.update({'.','describe','stack','litstack','words','sed','userdict','len','mid','depth','quote','&','eval','bind','unbind','dup','drop','swap','over','rot','>r','r@','r>','clearstack','candr','exec','inline','ifte','while','bye'}) #unsorted :)
 primitives.update({'fwd','left','right','color','up','down','pos','cs','setpos','teleport','home','penup','pendown','showturtle','hideturtle','bgcolor','circle'}) #turtle graphics
-#put the primitivies in some kind of logical groupings / order
-quotes = {'{'} # add more later? maybe rethink commenting
-dictionary = {}
+
+
+dictionary = { # here come the built-in words
+'`'           :      'swap bind',
+'if'          :      '{} ifte',
+'cons'        :      '{} swap & &',
+'car'         :      'candr swap drop',
+'cdr'         :      'candr drop',
+'.d'          :      'describe .',
+'.l'          :      'litstack .',
+'.s'          :      'stack .',
+'.u'          :      'userdict .',
+'.w'          :      'words .'
+}
 
 def main():
        while True:
@@ -43,14 +58,14 @@ def evaluate(readline):
                 readline = readline[(pos + 1):].strip() 
         else:
                 token, separator, readline = readline.partition(' ')    
-                parse(token)
+                parse(token) #why is this even its own function? Because I said so, that's why.
 
 def parse(token): 
     if token.lower() in dictionary: #I expressly let you re-bind over top of primitives
-           evaluate(dictionary[token.lower()])
-    elif token.lower() in primitives:
+           evaluate(dictionary[token.lower()]) #token has been defined, do its thing
+    elif token.lower() in primitives: #token is a primitive, execute the primitive
            evaluateprimitive(token.lower())
-    else: envstack.append(token)
+    else: envstack.append(token) #neither dictionary nor primitive be. On the stack I go.
 
 def evaluateprimitive(token): # order these more logicially
     try:
@@ -93,18 +108,18 @@ def evaluateprimitive(token): # order these more logicially
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
                 if arg2 > arg1:
-                       arg3 = 1
+                       arg3 = '1'           # truth values should really come from setfalse
                 else:
-                       arg3 = 0
-                envstack.append(str(arg3))
+                       arg3 = '0'
+                envstack.append(arg3)
         elif token == "lt":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
                 if arg2 < arg1:
-                       arg3 = 1
+                       arg3 = '1'
                 else:
-                       arg3 = 0
-                envstack.append(str(arg3))
+                       arg3 = '0'
+                envstack.append(arg3)
         elif token == "eq":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
@@ -242,6 +257,7 @@ def evaluateprimitive(token): # order these more logicially
         elif token == 'litstack':
                arg1 = ' '.join(f'{{{item}}}' for item in envstack)
                envstack.append(arg1)
+       #ups, lc, and, or not, xor
         elif token == "bye":
               quit()
 
@@ -258,7 +274,7 @@ def evaluateprimitive(token): # order these more logicially
         elif token == "up":
                 t.up()  
         elif token == "down":
-                t.down()    
+                t.down() 
         elif token == "cs":
                 t.clearscreen()  
         elif token == "color":
@@ -296,6 +312,7 @@ def evaluateprimitive(token): # order these more logicially
                print("oops")
     except IndexError:
         print("Stack Underflow")
+
 
 if __name__ == "__main__":
 
