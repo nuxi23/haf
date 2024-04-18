@@ -12,10 +12,10 @@ Additionally, as far as I know, there has not yet been the concatenative languag
 **n.b.** Until I get a chance to work on a Python version, the TeleBASIC manual should mostly work, although not all commands are implmented, and none of the alternate bracket types '(', '[' or even '~' are implmented. There is, however, one major difference:
 
 **I have swapped the way Bind works**. Code tends to be more readable when you put the name of the function first, so:
->{dup *} double bind
+>{dup *} square bind
 
 is now
->double {dup *} bind
+>square {dup *} bind
 
 Until I implement either builtins or a standard library, I would highly suggest binding the backquote to work the old way, thusly:
 >` {swap bind} bind
