@@ -53,7 +53,7 @@ def parse(token):
     else: envstack.append(token)
 
 def evaluateprimitive(token): # order these more logicially
-    try:                          #error handling would be, you know, nice to have
+    try:
         if token == "+":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
