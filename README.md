@@ -17,8 +17,8 @@ Additionally, as far as I know, there has not yet been the concatenative languag
 is now
 >square {dup *} bind
 
-Until I implement either builtins or a standard library, I would highly suggest binding the backquote to work the old way, thusly:
->` {swap bind} bind
+I have kept backquote working the original way, as I find it more conveninet in the REPL:
+>{dup *} square `
 
 ## TODO
 
