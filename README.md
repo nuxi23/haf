@@ -17,13 +17,15 @@ Additionally, as far as I know, there has not yet been the concatenative languag
 is now
 >square {dup *} bind
 
-The backquote still works the old way, which I generally prefer while using the REPL, so:
->{dup *} square `
+Until I implement either builtins or a standard library, I would highly suggest binding the backquote to work the old way, thusly:
+>` {swap bind} bind
 
 ## TODO
 
-- convert old manual to markdown and update for python version
-- implement more of the primitives and builtins from TeleHaf
+- well, some error handling would be nice. Probably work on that first. 
+- and a manual, also, too.
+- implement more of the primitives from TeleHaf
 - comments, though I may change the syntax for them
+- add either builtins or a standard library
 - remove unneccesary primitives (they were primitives in TeleHaf due to performance issues)
 - file handling of some sort (was never thrilled with the TeleHaf version)
