@@ -1,4 +1,5 @@
 import re
+import math
 import os
 from collections import deque
 import turtle as t
@@ -12,23 +13,41 @@ quotes = {'{'} # add more later? maybe rethink commenting
 #put the primitivies in some kind of logical groupings / order
 primitives = {'+','-','*','%','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
-primitives.update({'prin1','.','input','cls'}) #I/O
 primitives.update({'ifte','while'}) #control
-primitives.update({'dup','drop','swap','over','rot','>r','r@','r>','n>r','nr>','clearstack','reverse','depth','stack','litstack'}) #stack manipulation
-primitives.update({'sed','len','mid','&','chr','ord'}) #strings
+primitives.update({'dup','drop','swap','over','rot','>r','r@','r>','n>r','nr>'}) #stack manipulation
+primitives.update({'sed','mid','&'}) #strings
 primitives.update({'exec','inline'}) #system interface
-primitives.update({'describe','words','userdict','eval','bind','unbind','candr','bye'})
+primitives.update({'describe','bind','unbind','candr'})
 primitives.update({'fwd','left','right','color','up','down','pos','cs','setpos','teleport','home','penup','pendown','showturtle','hideturtle','bgcolor','circle'}) #turtle graphics
 
 
 dictionary = { # here come the built-in words
 '.'           :      'prin1 10 chr prin1',
 '`'           :      'swap bind',
+'abs'         :      'abs( swap & ) & inline',
+'bye'         :      'quit() inline',
 'cons'        :      '{} swap & &',
+'cat'         :      '10 chr swap & &',
 'car'         :      'candr swap drop',
 'cdr'         :      'candr drop',
+'chr'         :      'chr(int( swap & )) & inline',
+'clearstack'  :      'envstack.clear inline drop',
+'cls'         :      'os.system("cls") inline drop',
+'eval'        :      'evaluate(envstack.pop) inline drop',
+'emit'        :      'chr prin1',
 'if'          :      '{} ifte',
+'input'       :      'input() inline',
+'int'         :      'math.floor( swap & ) & inline',
+'left'        :      '0 swap mid',
+'len'         :      'len(envstack) inline',
+'litstack'    :      '{" ".join(f"{{{item}}}" for item in envstack)} inline',
+'ord'         :      'chr(int( swap & )) & inline',
+'prin1'       :      'print(envstack.pop(),end="") inline drop',
 'quote'       :      '123 chr swap 125 chr & &',
+'reverse'     :      'envstack.reverse() inline drop',
+'stack'       :      '{" ".join(map(str, envstack))} inline',
+'userdict'    :      '{" ".join(dictionary.keys())} inline',
+'words'       :      '{" ".join(primitives) + " " + " ".join(dictionary.keys())} inline',
 'r>'          :      '1 nr>',
 '>r'          :      '1 n>r',
 '.d'          :      'describe .',
@@ -137,16 +156,12 @@ def evaluateprimitive(token): # re-order to match above
                      envstack.append(str(int(arg2) == int(arg1)))
                 except:
                        envstack.append('0')
-        elif token == "prin1":
-              print(envstack.pop(),end='')
         elif token == "&":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
                envstack.append(arg2 + arg1)
         elif token == "eval":
               evaluate(envstack.pop())
-        elif token == "cls":
-              os.system('cls')
         elif token == "bind":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
@@ -162,8 +177,6 @@ def evaluateprimitive(token): # re-order to match above
               envstack.append(arg1)
         elif token == "drop":
               envstack.pop()
-        elif token == "drop":
-              envstack.reverse()
         elif token == "swap":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
@@ -176,13 +189,7 @@ def evaluateprimitive(token): # re-order to match above
               envstack.append(o.decode('ascii'))
         elif token == "inline":
               arg1 = envstack.pop()
-              envstack.append(eval(arg1))
-        elif token == "chr":
-              arg1 = envstack.pop()
-              envstack.append(chr(int(arg1)))
-        elif token == "str":
-              arg1 = envstack.pop()
-              envstack.append(str(ord(arg1)))
+              envstack.append(str(eval(arg1)))
         elif token == "ifte":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -237,17 +244,6 @@ def evaluateprimitive(token): # re-order to match above
               for i in range(int(arg1)):
                      arg2 = returnstack.pop()
                      envstack.append(arg2)
-        elif token == "clearstack":
-               envstack.clear()
-        elif token == "input":
-               input(arg1)
-               envstack.append(arg1)
-        elif token == "quote":
-               arg1 = envstack.pop()
-               envstack.append("{" + arg1 + "}")
-        elif token =="depth":
-               arg1 = len(envstack)
-               envstack.append(str(arg1))
         elif token =="mid":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -256,10 +252,6 @@ def evaluateprimitive(token): # re-order to match above
                      envstack.append(arg3[int(arg2):int(arg2) + int(arg1)])
                except:
                      envstack.append('')
-               
-        elif token =="len":
-               arg1 = envstack.pop()
-               envstack.append(str(len(arg1)))  
         elif token == "describe":
                arg1 = envstack.pop()
                if arg1.lower() in dictionary:
@@ -271,19 +263,6 @@ def evaluateprimitive(token): # re-order to match above
                arg2 = envstack.pop()
                arg3 = envstack.pop()
                envstack.append(re.sub(arg2,arg1,arg3))
-        elif token == "userdict":
-               envstack.append(' '.join(dictionary.keys()))
-        elif token == "words":
-               envstack.append(' '.join(primitives) + ' ' + ' '.join(dictionary.keys()))
-        elif token == "stack":
-               arg1 = ' '.join(map(str, envstack))
-               envstack.append(arg1)
-        elif token == 'litstack':
-               arg1 = ' '.join(f'{{{item}}}' for item in envstack)
-               envstack.append(arg1)
-       #ups, lc, and, or not, xor
-        elif token == "bye":
-              quit()
 
 #turtle graphics!
         elif token == "fwd":
