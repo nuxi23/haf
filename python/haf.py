@@ -10,11 +10,11 @@ returnstack = deque()
 quotes = {'{'} # add more later? maybe rethink commenting
 
 #put the primitivies in some kind of logical groupings / order
-primitives = {'+','-','*','mod','/'} #math
+primitives = {'+','-','*','%','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
 primitives.update({'prin1','.','input','cls'}) #I/O
 primitives.update({'ifte','while'}) #control
-primitives.update({'dup','drop','swap','over','rot','>r','r@','r>','clearstack','reverse','depth','stack','litstack'}) #stack manipulation
+primitives.update({'dup','drop','swap','over','rot','>r','r@','r>','n>r','nr>','clearstack','reverse','depth','stack','litstack'}) #stack manipulation
 primitives.update({'sed','len','mid','&','chr','ord'}) #strings
 primitives.update({'exec','inline'}) #system interface
 primitives.update({'describe','words','userdict','eval','bind','unbind','candr','bye'})
@@ -29,6 +29,8 @@ dictionary = { # here come the built-in words
 'cdr'         :      'candr drop',
 'if'          :      '{} ifte',
 'quote'       :      '123 chr swap 125 chr & &',
+'r>'          :      '1 nr>',
+'>r'          :      '1 n>r',
 '.d'          :      'describe .',
 '.l'          :      'litstack .',
 '.s'          :      'stack .',
@@ -98,7 +100,7 @@ def evaluateprimitive(token): # re-order to match above
                      envstack.append(str(int(arg2) * int(arg1)))
                 except:
                        envstack.append('0')
-        elif token == "mod":
+        elif token == "%":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
                 try:
@@ -221,16 +223,20 @@ def evaluateprimitive(token): # re-order to match above
                        arg1, arg2 = arg1.split(maxsplit=1)
                        envstack.append(arg2)
                        envstack.append(arg1)
-        elif token == ">r":
+        elif token == "n>r":
               arg1 = envstack.pop()
-              returnstack.append(arg1)
+              for i in range(int(arg1)):
+                     arg2 = envstack.pop()         
+                     returnstack.append(arg2)
         elif token == "r@":
               arg1 = returnstack.pop()
               returnstack.append(arg1)
               envstack.append(arg1)
-        elif token == "r>":
-              arg1 = returnstack.pop()
-              envstack.append(arg1)
+        elif token == "nr>":
+              arg1 = envstack.pop()
+              for i in range(int(arg1)):
+                     arg2 = returnstack.pop()
+                     envstack.append(arg2)
         elif token == "clearstack":
                envstack.clear()
         elif token == "input":
