@@ -150,7 +150,7 @@ def evaluateprimitive(token): # re-order to match above
         elif token == "bind":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
-              dictionary[arg2] = arg1
+              dictionary[arg2.lower()] = arg1
         elif token == "unbind":
                arg1 = envstack.pop()
                try:
