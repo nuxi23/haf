@@ -14,26 +14,26 @@ quotes = {'{'} # add more later? maybe rethink commenting
 primitives = {'+','-','*','%','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
 primitives.update({'ifte','while'}) #control
-primitives.update({'dup','drop','swap','over','rot','>r','r@','r>','n>r','nr>'}) #stack manipulation
+primitives.update({'drop','swap','over','rot','>r','r@','r>','n>r','nr>'}) #stack manipulation
 primitives.update({'sed','mid','&'}) #strings
 primitives.update({'exec','inline'}) #system interface
 primitives.update({'describe','bind','unbind','candr'})
-primitives.update({'fwd','left','right','color','up','down','pos','cs','setpos','teleport','home','penup','pendown','showturtle','hideturtle','bgcolor','circle'}) #turtle graphics
 
 
 dictionary = { # here come the built-in words
 '.'           :      'prin1 10 chr prin1',
 '`'           :      'swap bind',
-'abs'         :      'abs( swap & ) & inline',
+'abs'         :      'abs( swap & )  & inline', #python has eval, so we can go hog-wild
 'bye'         :      'quit() inline',
 'cons'        :      '{} swap & &',
 'cat'         :      '10 chr swap & &',
 'car'         :      'candr swap drop',
 'cdr'         :      'candr drop',
 'chr'         :      'chr(int( swap & )) & inline',
-'clearstack'  :      'envstack.clear inline drop',
+'clearstack'  :      'envstack.clear() inline drop',
 'cls'         :      'os.system("cls") inline drop',
-'eval'        :      'evaluate(envstack.pop) inline drop',
+'dup'         :      '>r r@ r>',
+'eval'        :      'evaluate(envstack.pop()) inline drop',
 'emit'        :      'chr prin1',
 'if'          :      '{} ifte',
 'input'       :      'input() inline',
@@ -54,7 +54,20 @@ dictionary = { # here come the built-in words
 '.l'          :      'litstack .',
 '.s'          :      'stack .',
 '.u'          :      'userdict .',
-'.w'          :      'words .'
+'.w'          :      'words .',
+'t.fwd'       :      't.forward(int(envstack.pop())) inline drop',
+'t.left'      :      't.left(int(envstack.pop())) inline drop',
+'t.right'     :      't.right(int(envstack.pop())) inline drop',
+'t.circle'    :      't.right(int(envstack.pop())) inline drop',
+'t.color'     :      't.color(envstack.pop()) inline drop',
+'t.bgcolor'   :      't.color(envstack.pop()) inline drop',
+'t.up'        :      't.up() inline drop',
+'t.down'      :      't.down() inline drop',
+'t.home'      :      't.home() inline drop',
+'t.showturtle':      't.showturtle() inline drop',
+'t.cls'       :      't.clearscreen() inline drop',
+'t.hideturle' :      't.hideturtle() inline drop',
+'t.pos'       :      't.pos() inline'
 }
 
 def main():
@@ -160,8 +173,6 @@ def evaluateprimitive(token): # re-order to match above
                arg1 = envstack.pop()
                arg2 = envstack.pop()
                envstack.append(arg2 + arg1)
-        elif token == "eval":
-              evaluate(envstack.pop())
         elif token == "bind":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
@@ -171,10 +182,6 @@ def evaluateprimitive(token): # re-order to match above
                try:
                       del dictionary[arg1]
                except: pass
-        elif token == "dup":
-              arg1 = envstack.pop()
-              envstack.append(arg1)
-              envstack.append(arg1)
         elif token == "drop":
               envstack.pop()
         elif token == "swap":
@@ -265,26 +272,6 @@ def evaluateprimitive(token): # re-order to match above
                envstack.append(re.sub(arg2,arg1,arg3))
 
 #turtle graphics!
-        elif token == "fwd":
-                arg1 = int(envstack.pop())
-                t.forward(arg1)
-        elif token == "left":
-                arg1 = int(envstack.pop())
-                t.left(arg1)
-        elif token == "right":
-                arg1 = int(envstack.pop())
-                t.right(arg1)
-        elif token == "up":
-                t.up()  
-        elif token == "down":
-                t.down() 
-        elif token == "cs":
-                t.clearscreen()  
-        elif token == "color":
-                arg1 = envstack.pop()
-                t.color(arg1)
-        elif token == "pos":
-                envstack.append(t.pos())
         elif token == "setpos":
                arg1 = int(envstack.pop())
                arg2 = int(envstack.pop())
@@ -293,22 +280,6 @@ def evaluateprimitive(token): # re-order to match above
                arg1 = int(envstack.pop())
                arg2 = int(envstack.pop())
                t.teleport(arg2,arg1)
-        elif token == "home":
-               t.home()
-        elif token =="penup":
-               t.penup()
-        elif token =="pendown":
-               t.pendown()
-        elif token =="showturtle":
-               t.showturtle()
-        elif token =="hideturtle":
-               t.hideturtle
-        elif token =="circle":
-               arg1 = int(envstack.pop())
-               t.circle(arg1)
-        elif token =="bgcolor":
-               arg1=envstack.pop()
-               t.bgcolor(arg1)
 
                                                                          
         else:
