@@ -10,7 +10,6 @@ returnstack = deque()
 
 quotes = {'{'} # add more later? maybe rethink commenting
 
-#put the primitivies in some kind of logical groupings / order
 primitives = {'+','-','*','%','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
 primitives.update({'ifte','while'}) #control
@@ -169,9 +168,8 @@ def evaluateprimitive(token): # re-order to match above
               arg2 = envstack.pop()
               dictionary[arg2.lower()] = arg1
         elif token == "unbind":
-               arg1 = envstack.pop()
                try:
-                      del dictionary[arg1]
+                      del dictionary[envstack.pop()]
                except: pass
         elif token == "drop":
               envstack.pop()
@@ -186,8 +184,7 @@ def evaluateprimitive(token): # re-order to match above
               o, e = proc.communicate()
               envstack.append(o.decode('ascii'))
         elif token == "inline":
-              arg1 = envstack.pop()
-              envstack.append(str(eval(arg1)))
+              envstack.append(str(eval(envstack.pop())))
         elif token == "ifte":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -216,19 +213,15 @@ def evaluateprimitive(token): # re-order to match above
                        envstack.append(arg2)
                        envstack.append(arg1)
         elif token == "n>r":
-              arg1 = envstack.pop()
-              for i in range(int(arg1)):
-                     arg2 = envstack.pop()         
-                     returnstack.append(arg2)
+              for i in range(int(envstack.pop())): 
+                    returnstack.append(envstack.pop())
         elif token == "r@":
               arg1 = returnstack.pop()
               returnstack.append(arg1)
               envstack.append(arg1)
         elif token == "nr>":
-              arg1 = envstack.pop()
-              for i in range(int(arg1)):
-                     arg2 = returnstack.pop()
-                     envstack.append(arg2)
+              for i in range(int(envstack.pop())):
+                     envstack.append(returnstack.pop())
         elif token =="mid":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
