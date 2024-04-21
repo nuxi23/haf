@@ -24,7 +24,7 @@ dictionary = { # here come the built-in words
 '`'           :      'swap bind',
 'abs'         :      'abs( swap & )  & inline', #python has eval, so we can go hog-wild
 'bye'         :      'quit() inline',
-'cons'        :      '{} swap & &',
+'cons'        :      '{ } swap & &',
 'cat'         :      '10 chr swap & &',
 'car'         :      'candr swap drop',
 'cdr'         :      'candr drop',
