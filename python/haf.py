@@ -108,60 +108,38 @@ def evaluate(readline):
 
 def evaluateprimitive(token): # re-order to match above
     try:
-        if token == "+":
-                try:
-                     envstack.append(str(int(envstack.pop()) + int(envstack.pop())))
-                except:
-                       envstack.append('0') #replace with flexible false?
+        if token == "+": envstack.append(str(int(envstack.pop()) + int(envstack.pop())))
         elif token == "-":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
-                try:
-                     envstack.append(str(int(arg2) - int(arg1)))
-                except:
-                       envstack.append('0')
-        elif token == "*":
-                try:
-                     envstack.append(str(int(envstack.pop()) * int(envstack.pop())))
-                except:
-                       envstack.append('0')
+                envstack.append(str(int(arg2) - int(arg1)))
+        elif token == "*": envstack.append(str(int(envstack.pop()) * int(envstack.pop())))
         elif token == "%":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
-                try:
-                     envstack.append(str(int(arg2) // int(arg1)))
-                except:
-                       envstack.append('0')
+                envstack.append(str(int(arg2) // int(arg1)))
         elif token == "/":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
-                try:
-                     envstack.append(str(int(arg2) / int(arg1)))
-                except:
-                       envstack.append('0')
+                envstack.append(str(int(arg2) / int(arg1)))
         elif token == "gt":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                if arg2 > arg1:
-                       arg3 = '1'           # truth values should really come from setfalse
-                else:
-                       arg3 = '0'
+                if arg2 > arg1: arg3 = '1'           # truth values should really come from setfalse
+                else: arg3 = '0'
                 envstack.append(arg3)
         elif token == "lt":
                 arg1 = int(envstack.pop())
                 arg2 = int(envstack.pop())
-                if arg2 < arg1:
-                       arg3 = '1'
-                else:
-                       arg3 = '0'
+                if arg2 < arg1: arg3 = '1'
+                else: arg3 = '0'
                 envstack.append(arg3)
         elif token == "eq":
                 arg1 = envstack.pop()
                 arg2 = envstack.pop()
-                try:
-                     envstack.append(str(int(arg2) == int(arg1)))
-                except:
-                       envstack.append('0')
+                if arg2 == arg1: envstack.append('1')
+                else: envstack.append('0')
+                      
         elif token == "&":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -178,8 +156,7 @@ def evaluateprimitive(token): # re-order to match above
               arg1 = envstack.pop()
               envstack.append(arg1)
               envstack.append(arg1)
-        elif token == "drop":
-              envstack.pop()
+        elif token == "drop": envstack.pop()
         elif token == "swap":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
@@ -190,16 +167,13 @@ def evaluateprimitive(token): # re-order to match above
               proc = subprocess.Popen(arg1, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
               o, e = proc.communicate()
               envstack.append(o.decode('ascii'))
-        elif token == "inline":
-              envstack.append(str(eval(envstack.pop())))
+        elif token == "inline": envstack.append(str(eval(envstack.pop())))
         elif token == "ifte":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
                arg3 = envstack.pop()
-               if arg3 != '0': #replace with definable false
-                      evaluate(arg2)
-               else:
-                      evaluate(arg1)
+               if arg3 != '0': evaluate(arg2) #replace with definable false
+               else: evaluate(arg1)
         elif token == "while":
               arg1 = envstack.pop()
               arg2 = envstack.pop()
@@ -227,22 +201,18 @@ def evaluateprimitive(token): # re-order to match above
                arg1 = envstack.pop()
                arg2 = envstack.pop()
                arg3 = envstack.pop()
-               try:
-                     envstack.append(arg3[int(arg2):int(arg2) + int(arg1)])
-               except:
-                     envstack.append('')
+               try: envstack.append(arg3[int(arg2):int(arg2) + int(arg1)])
+               except: envstack.append('')
         elif token == "describe":
                arg1 = envstack.pop()
-               if arg1.lower() in dictionary:
-                      envstack.append(dictionary[arg1.lower()])
-               else:
-                      envstack.append(arg1)
+               if arg1.lower() in dictionary: envstack.append(dictionary[arg1.lower()])
+               else: envstack.append(arg1)
                                                                          
         else:
                print("oops")
-    except IndexError:
-        print("Stack Underflow")
-
+    except IndexError: print("Stack Underflow")
+    except TypeError: print("Incompatible types")
+    except ValueError: print("Incompatible types")
 
 if __name__ == "__main__":
 
