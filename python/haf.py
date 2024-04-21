@@ -13,8 +13,8 @@ quotes = {'{'} # add more later? maybe rethink commenting
 primitives = {'+','-','*','%','/'} #math
 primitives.update({'gt','lt','eq'}) #comparison
 primitives.update({'ifte','while'}) #control
-primitives.update({'drop','swap','>r','r@','r>','n>r','nr>'}) #stack manipulation
-primitives.update({'sed','mid','&'}) #strings
+primitives.update({'drop','swap','n>r','nr>','dup'}) #stack manipulation
+primitives.update({'mid','&'}) #strings
 primitives.update({'exec','inline'}) #system interface
 primitives.update({'describe','bind','unbind','candr'})
 
@@ -31,7 +31,7 @@ dictionary = { # here come the built-in words
 'chr'         :      'chr(int( swap & )) & inline',
 'clearstack'  :      'envstack.clear() inline drop',
 'cls'         :      'os.system("cls") inline drop',
-'dup'         :      '>r r@ r>',
+'depth'       :      'str(len(envstack)) inline',
 'eval'        :      'evaluate(envstack.pop()) inline drop',
 'emit'        :      'chr prin1',
 'if'          :      '{} ifte',
@@ -49,9 +49,11 @@ dictionary = { # here come the built-in words
 'roll'        :      'dup >r envstack.rotate( swap & ) & inline drop r> swap >r -1 * envstack.rotate( swap & ) & inline drop r>',
 'rot'         :      '2 roll',
 'stack'       :      '{" ".join(map(str, envstack))} inline',
+'sub'         :      'rot re.sub( swap & ," & rot & "," & swap & ") & ',
 'userdict'    :      '{" ".join(dictionary.keys())} inline',
 'words'       :      '{" ".join(primitives) + " " + " ".join(dictionary.keys())} inline',
 'r>'          :      '1 nr>',
+'r@'          :      'r> dup >r',
 '>r'          :      '1 n>r',
 '.d'          :      'describe .',
 '.l'          :      'litstack .',
@@ -96,7 +98,8 @@ def evaluate(readline):
                 envstack.append(readline[1:(pos)]) #once we've found the full, nested quote, stick it on the stack
                 readline = readline[(pos + 1):].strip() 
         else:
-                token, separator, readline = readline.partition(' ')    
+                token = re.split('\\s+', readline)[0]
+                readline = readline[len(token):].lstrip()
                 if token.lower() in dictionary: #I expressly let you re-bind over top of primitives
                      evaluate(dictionary[token.lower()]) #token has been defined, do its thing
                 elif token.lower() in primitives: #token is a primitive, execute the primitive
@@ -171,6 +174,10 @@ def evaluateprimitive(token): # re-order to match above
                try:
                       del dictionary[envstack.pop()]
                except: pass
+        elif token == "dup":
+              arg1 = envstack.pop()
+              envstack.append(arg1)
+              envstack.append(arg1)
         elif token == "drop":
               envstack.pop()
         elif token == "swap":
@@ -213,15 +220,9 @@ def evaluateprimitive(token): # re-order to match above
                        envstack.append(arg2)
                        envstack.append(arg1)
         elif token == "n>r":
-              for i in range(int(envstack.pop())): 
-                    returnstack.append(envstack.pop())
-        elif token == "r@":
-              arg1 = returnstack.pop()
-              returnstack.append(arg1)
-              envstack.append(arg1)
+              for i in range(int(envstack.pop())): returnstack.append(envstack.pop())
         elif token == "nr>":
-              for i in range(int(envstack.pop())):
-                     envstack.append(returnstack.pop())
+              for i in range(int(envstack.pop())): envstack.append(returnstack.pop())
         elif token =="mid":
                arg1 = envstack.pop()
                arg2 = envstack.pop()
@@ -236,11 +237,6 @@ def evaluateprimitive(token): # re-order to match above
                       envstack.append(dictionary[arg1.lower()])
                else:
                       envstack.append(arg1)
-        elif token == "sed":
-               arg1 = envstack.pop()
-               arg2 = envstack.pop()
-               arg3 = envstack.pop()
-               envstack.append(re.sub(arg2,arg1,arg3))
                                                                          
         else:
                print("oops")
