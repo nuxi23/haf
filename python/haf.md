@@ -476,17 +476,26 @@ Here's an example of much of what we have learned in action, a simple generative
 
 {sentence}
 {noun-phrase verb-list dup rand-word noun-phrase cons cons} bind
-{{pigeon pickle tood paperclip Kardashian}} noun-list bind
-{{eats unleashes tickles hacks questions}} verb-list bind
-{{a the}} determiner-list bind
-{{cranky yellow happy tall stanky burbling}} adjective-list bind
+
+{noun-list}
+{{pigeon pickle tood paperclip Kardashian}} bind
+
+{verb-list}
+{{eats unleashes tickles hacks questions}} bind
+
+{determiner-list}
+
+{{a the}} bind
+
+{adjective-list}
+{{cranky yellow happy tall stanky burbling}} bind
 
 0 >sentence .
 a stanky Kardashian unleashes the yellow tood
 ```
 
 ## Full dictionary
-
+n.b. this is still a WIP and may retain words from Telehack Haf
   
 ```
 Word		stack		etymology	definition
@@ -498,7 +507,6 @@ Word		stack		etymology	definition
 -		    (n n -- n) 	Math		Add		
 .		    (a -- )		Forth		Pops value at top of stack and prints it, with newline. Synonym for PRINTLN
 .D		    (a -- )		Haf		    Prints definition of word at top of the stack. Equivalent to DESCRIBE .
-.EXE        (a -- )		Haf		    Executes command in telehack without placing it on stack
 .L		    ( -- )		Haf		    Prints stack contents as literals. Equivalent to LITSTACK .
 .S		    ( -- )		Forth		Prints stack contents. Equivalent to STACK .
 .U		    ( -- )		Haf		    Prints list of all user (non-primitive) words. Equivalent to USERDICT .
@@ -511,7 +519,6 @@ GT		    (n n -- a)	Math		If arg 1 > arg 2, return TRUE, else return FALSE
 ^		    (n n -- n)	Math		Exponentation
 `		    (a a -- )	Haf		    Bind arg1 to arg2.
 AND		    (a a -- a)	THBAS		Bitwise AND
-APPEND      (a -- )		Haf		    Opens working file for appending with name referenced at top of stack
 ASC
 ATN
 B64E 
@@ -531,31 +538,20 @@ COLOR
 CONS		(a a -- a)	Lisp		Combines two elements into a single list
 COS 
 CSNG
-DEFGROUP
 DEPTH		( -- a)		Forth		Returns depth of stack before word is run
 DESCRIBE	( -- a)		Lisp		Returns definition of word (user words only)
 DIR
 DROP		(a -- )		Forth		Discards element at top of stack
 DUP		    (a -- a a)	Forth		Duplicates element at top of stack
 EMIT		(a -- )		Forth		Prints single character represented by unicode value at top of stack
-EOF
 EQ		    (a a -- a)	Lisp		If arg1 and arg2 are the same, return TRUE else return FALSE
 EVAL		(a -- )		Lisp		Execute element at top of stack as if entered at command line
 EXEC		(a -- )		THBAS		Pass arg1 to TELEHACK, return value goes to top of stack
 EXP
 FALSE		(-- a)		Lisp		Return False
 FALSE?		(a -- a)	Lisp		If value at top of stack is false, return true
-FETCH		(a -- a)	Haf		    Read from file at line number at top of stack
-GMTIME
-HASADMIN
-HASBADGE 
-HASLOGIN 
-HASROOT 
-HASSYSOP 
-HEIGHT
 HELP		( -- )				    Print help screen
 HEX
-HOSTNAME
 IF		    (a a -- )	Haf		    If arg1 is true, eval arg2
 IFTE		(a a a -- )	Haf		    If arg1 is true, eval arg2 else eval arg3
 INKEY
@@ -565,71 +561,42 @@ INT
 LEFT 
 LEN 
 LITSTACK	( -- a)		Haf		    Return contents of stack as literals
-LOCALTIME 
 LOG 
 LOG10 
-MD5BASE64
-MD5HEX
 MID 
-MODEM
 MOVETO    	(x y --)	Postscript	Move cursor to x, y
 N>R		    (n --)		Forth		Move n elements (not including n) to the return stack
 NE		    (a a -- a)	Lisp		If arg1 and arg2 are different, return TRUE else return FALSE
-NETSTAT
 NEW		    (--)		THBAS		Restores environment to original state
 NINT
 NR>		    (n --)		Forth		Move n elements from the return stack to the data stack
 NOT
 OCT
-OPEN    	(a --)		Haf		    Opens working file with name referenced at top of stack
 OVER		(a a -- a a a)	Forth   Copy element in second postion to top of stack
 OR
-PEEK 
 PICK        (n -- a)    Forth       Copies element at stack position n to top of stack
-PLAN
-POKE 
 POLKEY 
-PORT 
 POS
 PRIN1		(a --)		Lisp		Prints top of stack without a newline. Equivalent to basic PRINT FOO;
 QUOTE		(a -- a)	Lisp		Quotes top of stack by adding a set of curly braces
 R>		    ( -- a)		Forth		Move element at top of return stack to data stack
 R@		    ( -- a)		Forth		Copy element at top of return stack to data stack
 R2D
-READ    	( -- a)		Haf		    Read one line from open file and put at top of stack
-RE 
-RE$ 
-REC
-REV
 RIGHT 
 RND
 ROT		(a a a -- a a a)Forth	    Move element in 3rd position to top of stack
-SCRATCH		(a -- )		THBAS	    Remove file at top of stack, prompt for confirmation
-SSCRATCH	(a -- )		THBAS	    Remove file at top of stack silently
-SED
-SELECT		(a -- a)	SQL		    Get line from file at row# specified at top of stack
 SETTRUE		(a -- )		Haf		    Make value at top of stack the new value of TRUE
 SETFALSE	(a -- )		Haf		    Make value at top of stack the new value of FALSE
 SGN 
 SIN 
-SLEEP 
 SQR 
 STACK		( -- a)		Forth		Put contents of stack as a single list on the top of the stack
-STRING
 SWAP		(a a -- a a)Forth		Swap top two elements of stack
-SYSLEVEL
 TAN
-TIM 
-TIME 
-TIMER 
-TYP
 TRUE		(a -- a)	Lisp		Returns TRUE
 TRUE?		(a -- a)	Lisp		If value at top of stack is true, return true, else return false
 UNBIND		(a --)		Haf		    Remove binding from element at top of stack
 UPS 
-USER 
 USERDICT	(-- a)		Haf		    Put list of all user words(non-primitives) at top of stack
-WIDTH
 WHILE
 WORDS		(-- a)		Forth		Put list of all words, including primtives at top of stack. Synonym for DICT
-WRITE		(a --)		Haf		    Writes top of stack to open file
