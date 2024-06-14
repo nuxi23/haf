@@ -22,6 +22,5 @@ I have kept backquote working the original way, as I find it more convenient in 
 
 ## TODO
 
-- update TeleHaf manual to python version and add markdown
 - comments, though I may change the syntax for them
 - file handling of some sort (was never thrilled with the TeleHaf version)
