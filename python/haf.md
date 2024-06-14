@@ -488,7 +488,7 @@ a stanky Kardashian unleashes the yellow tood
 ## Full dictionary
 
   
-
+```
 Word		stack		etymology	definition
 		    def
 %		    (n n -- n)	Math		Modulo	
